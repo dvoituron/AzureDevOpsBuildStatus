@@ -1,5 +1,6 @@
 ﻿using ProjectStatus.Models;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace ProjectStatus
@@ -8,11 +9,12 @@ namespace ProjectStatus
     {
         static async Task Main(string[] args)
         {
-            var factory = new Factory();
+            Console.WriteLine($"Status of Azure DevOps Builds and Releases at {DateTime.Now.ToShortTimeString()}");
 
+            var factory = new Factory();
             var builds = await factory.Builds.GetStatusAsync();
 
-            foreach (var build in builds)
+            foreach (var build in builds.OrderBy(i => $"{i.Project}-{i.Name}"))
             {
                 build.WriteToConsole();
             }

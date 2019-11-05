@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ProjectStatus.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -66,18 +67,18 @@ namespace ProjectStatus.Models
                     break;
                 case ProcessStatus.InProgress:
                     Console.BackgroundColor = ConsoleColor.Blue;
-                    Console.ForegroundColor = ConsoleColor.Black;
+                    Console.ForegroundColor = ConsoleColor.White;
                     Console.Write("IN PROGRESS");
                     break;
                 case ProcessStatus.Failed:
                     Console.BackgroundColor = ConsoleColor.Red;
-                    Console.ForegroundColor = ConsoleColor.Black;
+                    Console.ForegroundColor = ConsoleColor.White;
                     Console.Write("FAILED     ");
                     break;
             }
             Console.ResetColor();
             //Console.WriteLine($" {Name} | BUILD v.{Version} requested by {Author} {fromTo}");
-            Console.WriteLine($" {Project} > {Name} ");
+            Console.WriteLine($" {Project.FixedTo(30)} | {Name.FixedTo(40)} | {Version}");
         }
 
         public enum ProcessStatus

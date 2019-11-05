@@ -45,7 +45,6 @@ namespace ProjectStatus
                     if (response.IsSuccessStatusCode)
                     {
                         string responseBody = await response.Content.ReadAsStringAsync();
-                        File.WriteAllText(@"C:\_Temp\test.json", responseBody);
 
                         var build = JsonSerializer.Deserialize<BuildDefinition>(responseBody);
                         return build.value.Select(i => new BuildStatus(i));
