@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ProjectStatus.Internals
+namespace ProjectStatus.Internals.Builds
 {
 
     public class BuildDefinition

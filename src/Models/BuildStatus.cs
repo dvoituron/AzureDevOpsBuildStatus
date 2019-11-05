@@ -6,7 +6,25 @@ namespace ProjectStatus.Models
 {
     public class BuildStatus
     {
+        public BuildStatus()
+        { }
+
+        public BuildStatus(Internals.Builds.Value value)
+        {
+            Version = value.buildNumber;
+            Project = value.project.name;
+            Name = value.definition.name;
+            Status = value.status;
+            Result = value.result;
+            Author = value.requestedFor.displayName;
+            StartTime = value.startTime;
+            EndTime = value.finishTime;
+        }
+
+
         public string Version { get; set; }
+        public string Project { get; set; }
+        public string Name { get; set; }
         public string Status { get; set; }
         public string Result { get; set; }
         public string Author { get; set; }
@@ -37,7 +55,7 @@ namespace ProjectStatus.Models
 
         public void WriteToConsole()
         {
-            string fromTo = $"{StartTime.ToShortDateString()} {StartTime.ToShortTimeString()} -> {EndTime.ToShortDateString()} {EndTime.ToShortTimeString()}";
+            string fromTo = $"from {StartTime.ToShortDateString()} {StartTime.ToShortTimeString()} to {EndTime.ToShortDateString()} {EndTime.ToShortTimeString()}";
 
             switch (GetProcessStatus())
             {
@@ -58,7 +76,8 @@ namespace ProjectStatus.Models
                     break;
             }
             Console.ResetColor();
-            Console.WriteLine($" {fromTo} | BUILD v.{Version} requested by {Author}");
+            //Console.WriteLine($" {Name} | BUILD v.{Version} requested by {Author} {fromTo}");
+            Console.WriteLine($" {Project} > {Name} ");
         }
 
         public enum ProcessStatus

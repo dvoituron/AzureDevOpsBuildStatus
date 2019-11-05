@@ -10,8 +10,13 @@ namespace ProjectStatus
         {
             var factory = new Factory();
 
-            var build = await factory.Builds.GetStatus("DossierUnique", 38);
-            build.WriteToConsole();
+            var builds = await factory.Builds.GetStatusAsync();
+
+            foreach (var build in builds)
+            {
+                build.WriteToConsole();
+            }
+
         }
     }
 }
