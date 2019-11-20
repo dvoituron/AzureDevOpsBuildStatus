@@ -62,14 +62,14 @@ namespace ProjectStatus.Services
         /// </remarks>
         public async Task<IEnumerable<BuildStatus>> GetStatusAsync(string projectName, int? buildDefinitionId)
         {
-            string collection = _factory.Configuration.Collection;
+            string organization = _factory.Configuration.Organization;
             string queryString = buildDefinitionId.HasValue
                                     ? $"?maxBuildsPerDefinition=1&definitions={buildDefinitionId}&maxBuildsPerDefinition=1"
                                     : $"?maxBuildsPerDefinition=1";
 
             using (var client = _factory.GetHttpClient())
             {
-                using (var response = await client.GetAsync($"{collection}/{projectName}/_apis/build/builds{queryString}"))
+                using (var response = await client.GetAsync($"{organization}/{projectName}/_apis/build/builds{queryString}"))
                 {
                     if (response.IsSuccessStatusCode)
                     {

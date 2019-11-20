@@ -10,7 +10,7 @@ namespace ProjectStatus.Models
     {
         public Uri BaseUrl { get; set; }
 
-        public string Collection { get; set; }
+        public string Organization { get; set; }
 
         public string Pat { get; set; }
 

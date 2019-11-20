@@ -24,11 +24,11 @@ namespace ProjectStatus.Services
         /// <returns></returns>
         public async Task<IEnumerable<Project>> GetAllProjectsAsync()
         {
-            string collection = _factory.Configuration.Collection;
+            string organization = _factory.Configuration.Organization;
 
             using (var client = _factory.GetHttpClient())
             {
-                using (var response = await client.GetAsync($"{collection}/_apis/projects"))
+                using (var response = await client.GetAsync($"{organization}/_apis/projects"))
                 {
                     if (response.IsSuccessStatusCode)
                     {
