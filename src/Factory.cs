@@ -1,15 +1,18 @@
 ﻿using ProjectStatus.Models;
 using System;
+using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Reflection;
 
 namespace ProjectStatus
 {
     public class Factory
     {
-        public Factory()
+        public Factory(string[] args)
         {
-            Configuration = Models.Configuration.ReadAppSettings();
+            Configuration = new Configuration().FillWithArgs(args);
         }
 
         public Configuration Configuration { get; }
@@ -28,6 +31,5 @@ namespace ProjectStatus
 
             return client;
         }
-
     }
 }

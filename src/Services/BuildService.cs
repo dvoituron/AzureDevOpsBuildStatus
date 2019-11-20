@@ -35,22 +35,6 @@ namespace ProjectStatus.Services
         }
 
         /// <summary>
-        /// Gets the Build Status for all build defined in AppSettings Configuration.
-        /// </summary>
-        /// <returns></returns>
-        public async Task<IEnumerable<BuildStatus>> GetStatusAsync(IEnumerable<Configuration.BuildDefinition> definitions)
-        {
-            var listOfBuildStatus = new List<BuildStatus>();
-
-            foreach (var item in definitions)
-            {
-                listOfBuildStatus.AddRange(await GetStatusAsync(item.ProjectName, item.BuildDefinitionId));
-            }
-
-            return listOfBuildStatus;
-        }
-
-        /// <summary>
         /// Gets the Build Status for the specified project name.
         /// If the <paramref name="buildDefinitionId"/> is missing, all Build Definition Status for this project will be returns.
         /// </summary>

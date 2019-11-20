@@ -12,22 +12,26 @@ namespace ProjectStatus
         {
             Console.WriteLine($"Status of Azure DevOps Builds and Releases at {DateTime.Now.ToShortTimeString()}");
 
-            var factory = new Factory();
-            var projects = await factory.Projects.GetAllProjectsAsync();
+            var factory = new Factory(args);
 
-            foreach (var project in projects)
+            if (factory.Configuration.DisplayHelp)
             {
-                var builds = await factory.Builds.GetStatusAsync(project.Name, buildDefinitionId: null);
-                builds.WriteToConsole();
+                Console.WriteLine("Arguments: ");
+                Console.WriteLine("--help, -h           Display this help.");
+                Console.WriteLine("--url, -u            Set the Azure DevOps URL. By default: https://dev.azure.com.");
+                Console.WriteLine("--organization, -o   Set the organisation name.");
+                Console.WriteLine("--pat, -p            Set the security PAT key.");
             }
+            else
+            {
+                var projects = await factory.Projects.GetAllProjectsAsync();
 
-            //var builds = await factory.Builds.GetStatusAsync(projects);
-
-            //foreach (var build in builds.OrderBy(i => $"{i.Project}-{i.Name}"))
-            //{
-            //    build.WriteToConsole();
-            //}
-
+                foreach (var project in projects)
+                {
+                    var builds = await factory.Builds.GetStatusAsync(project.Name, buildDefinitionId: null);
+                    builds.WriteToConsole();
+                }
+            }
         }
     }
 }

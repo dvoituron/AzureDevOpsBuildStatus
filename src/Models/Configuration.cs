@@ -8,7 +8,7 @@ namespace ProjectStatus.Models
 {
     public class Configuration
     {
-        public Uri BaseUrl { get; set; }
+        public Uri BaseUrl { get; set; } = new Uri("https://dev.azure.com");
 
         public string Organization { get; set; }
 
@@ -16,61 +16,63 @@ namespace ProjectStatus.Models
 
         public string PatAsBase64 => Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(string.Format("{0}:{1}", "", this.Pat)));
 
-        public string[] Builds { get; set; }
+        public bool IncludeValid { get; set; } = false;
 
-        public BuildDefinition[] BuildDefinitionsDetails => Builds?.Select(i => new BuildDefinition(i))?.ToArray();
+        public bool DisplayHelp { get; set; } = false;
 
-        public static Configuration ReadAppSettings()
+        public Configuration FillWithArgs(string[] args)
         {
-            // Get Execurting Assembly path
-            var uri = new UriBuilder(Assembly.GetExecutingAssembly().CodeBase);
-            var file = Uri.UnescapeDataString(uri.Path);
-            var path = Path.GetDirectoryName(file);
-
-            // Settings filename
-            var jsonFilename = Path.Combine(path, "AppSettings.json");
-
-            if (File.Exists(jsonFilename))
+            var arguments = args.Select(arg =>
             {
-                var jsonContent = File.ReadAllText(jsonFilename);
-                var config = System.Text.Json.JsonSerializer.Deserialize<Configuration>(jsonContent, new System.Text.Json.JsonSerializerOptions()
-                {
-                    ReadCommentHandling = System.Text.Json.JsonCommentHandling.Skip,
-                    AllowTrailingCommas = true,
-                    IgnoreNullValues = true,
-                    PropertyNameCaseInsensitive = true,
-                });
-                return config;
-            }
-            else
-            {
-                Console.WriteLine("ERROR: Can not find AppSettings.json file.");
-                return null;
-            }
-        }
-
-        public class BuildDefinition
-        {
-            public BuildDefinition(string value)
-            {
-                var details = value.Split("#");
-
-                this.ProjectName = details[0];
-
-                if (details.Length > 1)
-                    this.BuildDefinitionId = Convert.ToInt32(details[1]);
+                int index = arg.IndexOfAny(new[] { ':', '=' });
+                if (index > 0)
+                    return new[] { arg.Substring(0, index), arg.Substring(index + 1) };
                 else
-                    this.BuildDefinitionId = null;
-            }
+                    return new[] { arg, String.Empty };
+            });
 
-            public BuildDefinition(string projectName, int buildDefinitionId)
+            foreach (var argument in arguments)
             {
-                this.ProjectName = projectName;
-                this.BuildDefinitionId = buildDefinitionId;
+                if (argument.Length == 2)
+                {
+                    string name = argument[0].ToLower();
+                    string value = argument[1];
+
+                    switch (name)
+                    {
+                        case "--help":
+                        case "-h":
+                            this.DisplayHelp = true;
+                            break;
+
+                        case "--url":
+                        case "-u":
+                            this.BaseUrl = new Uri(value);
+                            break;
+
+                        case "--organization":
+                        case "-o":
+                            this.Organization = value;
+                            break;
+
+                        case "--pat":
+                        case "-p":
+                            this.Pat = value;
+                            break;
+
+                        case "--include-valid":
+                        case "-iv":
+                            this.IncludeValid = true;
+                            break;
+
+                        default:
+                            this.DisplayHelp = true;
+                            break;
+                    }
+                }
             }
 
-            public string ProjectName { get; set; }
-            public int? BuildDefinitionId { get; set; }
+            return this;
         }
     }
 }

@@ -77,8 +77,7 @@ namespace ProjectStatus.Models
                     break;
             }
             Console.ResetColor();
-            //Console.WriteLine($" {Name} | BUILD v.{Version} requested by {Author} {fromTo}");
-            Console.WriteLine($" {Project.FixedTo(30)} | {Name.FixedTo(40)} | {Version.FixedTo(16)} | {Author} ");
+            Console.WriteLine($" {Project.FixedTo(20)} | {Name.FixedTo(25)} | {Version.FixedTo(16)} | {Author.FixedTo(16)}");
         }
 
         public enum ProcessStatus
