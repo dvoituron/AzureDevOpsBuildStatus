@@ -7,22 +7,42 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace ProjectStatus
+namespace ProjectStatus.Services
 {
-    public class Builds
+    public class BuildService
     {
         private Factory _factory;
 
-        public Builds(Factory factory)
+        public BuildService(Factory factory)
         {
             _factory = factory;
         }
 
-        public async Task<IEnumerable<BuildStatus>> GetStatusAsync()
+        /// <summary>
+        /// Gets the Build Status for all specified projects names.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IEnumerable<BuildStatus>> GetStatusAsync(IEnumerable<Models.Project> projects)
         {
             var listOfBuildStatus = new List<BuildStatus>();
 
-            foreach (var item in _factory.Configuration.BuildDefinitionsDetails)
+            foreach (var project in projects)
+            {
+                listOfBuildStatus.AddRange(await GetStatusAsync(project.Name, buildDefinitionId: null));
+            }
+
+            return listOfBuildStatus;
+        }
+
+        /// <summary>
+        /// Gets the Build Status for all build defined in AppSettings Configuration.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IEnumerable<BuildStatus>> GetStatusAsync(IEnumerable<Configuration.BuildDefinition> definitions)
+        {
+            var listOfBuildStatus = new List<BuildStatus>();
+
+            foreach (var item in definitions)
             {
                 listOfBuildStatus.AddRange(await GetStatusAsync(item.ProjectName, item.BuildDefinitionId));
             }
@@ -30,7 +50,16 @@ namespace ProjectStatus
             return listOfBuildStatus;
         }
 
-        // https://dev.azure.com/{organization}/{project}/_apis/build/builds
+        /// <summary>
+        /// Gets the Build Status for the specified project name.
+        /// If the <paramref name="buildDefinitionId"/> is missing, all Build Definition Status for this project will be returns.
+        /// </summary>
+        /// <param name="projectName"></param>
+        /// <param name="buildDefinitionId"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// https://dev.azure.com/{organization}/{project}/_apis/build/builds
+        /// </remarks>
         public async Task<IEnumerable<BuildStatus>> GetStatusAsync(string projectName, int? buildDefinitionId)
         {
             string collection = _factory.Configuration.Collection;

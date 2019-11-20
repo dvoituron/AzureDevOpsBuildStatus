@@ -10,12 +10,13 @@ namespace ProjectStatus
         public Factory()
         {
             Configuration = Models.Configuration.ReadAppSettings();
-            Builds = new Builds(this);
         }
 
         public Configuration Configuration { get; }
 
-        public Builds Builds { get; }
+        public Services.BuildService Builds => new Services.BuildService(this);
+
+        public Services.ProjectService Projects => new Services.ProjectService(this);
 
         public HttpClient GetHttpClient()
         {
