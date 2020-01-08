@@ -1,6 +1,9 @@
 ﻿using ProjectStatus.Helpers;
 using ProjectStatus.Models;
 using System;
+using System.Collections;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -10,6 +13,7 @@ namespace ProjectStatus
     {
         static async Task Main(string[] args)
         {
+            var watcher = System.Diagnostics.Stopwatch.StartNew();
             var factory = new Factory(args);
 
             Console.WriteLine($"Status of Azure DevOps Builds at {DateTime.Now.ToShortTimeString()} for organisation {factory.Configuration.Organization}");
@@ -29,13 +33,33 @@ namespace ProjectStatus
             {
                 try
                 {
-                    var projects = await factory.Projects.GetAllProjectsAsync();
+                    const bool IN_PARALLEL = true;
 
+                    var projects = await factory.Projects.GetAllProjectsAsync();
                     BuildStatus.WriteHeaders();
-                    foreach (var project in projects)
+
+                    if (IN_PARALLEL)
                     {
-                        var builds = await factory.Builds.GetStatusAsync(project.Name, buildDefinitionId: null);
-                        builds.WriteToConsole();
+                        var tasks = new ConcurrentDictionary<Project, Task<IEnumerable<BuildStatus>>>();
+                        Parallel.ForEach(projects, (project) =>
+                        {
+                            tasks.TryAdd(project, factory.Builds.GetStatusAsync(project.Name, buildDefinitionId: null));
+                        });
+
+                        foreach (var task in tasks)
+                        {
+                            task.Value.Wait();
+                            task.Value.GetAwaiter().GetResult().WriteToConsole();
+                        }
+                    }
+
+                    else
+                    {
+                        foreach (var project in projects)
+                        {
+                            var builds = await factory.Builds.GetStatusAsync(project.Name, buildDefinitionId: null);
+                            builds.WriteToConsole();
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -44,6 +68,8 @@ namespace ProjectStatus
                     Console.WriteLine($"ERROR: {ex.Message}");
                     Console.ResetColor();
                 }
+
+                Console.WriteLine($"Finished in {watcher.ElapsedMilliseconds} ms.");
 
             }
         }
