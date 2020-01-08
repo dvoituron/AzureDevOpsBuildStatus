@@ -13,5 +13,10 @@ namespace ProjectStatus.Helpers
             else
                 return value.Substring(0, numberOfChars - 3) + "...";
         }
+
+        public static string Repeat(this char value, int numberOfChars)
+        {
+            return new String(value, numberOfChars);
+        }
     }
 }

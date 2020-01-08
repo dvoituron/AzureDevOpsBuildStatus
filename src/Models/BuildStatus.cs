@@ -80,6 +80,12 @@ namespace ProjectStatus.Models
             Console.WriteLine($" {Project.FixedTo(20)} | {Name.FixedTo(25)} | {Version.FixedTo(16)} | {Author.FixedTo(16)}");
         }
 
+        public static void WriteHeaders()
+        {
+            Console.WriteLine($"{"State".FixedTo(9)}   {"Project Name".FixedTo(20)} | {"Build Name".FixedTo(25)} | {"Version".FixedTo(16)} | {"Started by".FixedTo(16)}");
+            Console.WriteLine($"{'-'.Repeat(9)}   {'-'.Repeat(20)} | {'-'.Repeat(25)} | {'-'.Repeat(16)} | {'-'.Repeat(16)}");
+        }
+
         public enum ProcessStatus
         {
             Succeeded,

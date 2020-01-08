@@ -10,9 +10,10 @@ namespace ProjectStatus
     {
         static async Task Main(string[] args)
         {
-            Console.WriteLine($"Status of Azure DevOps Builds and Releases at {DateTime.Now.ToShortTimeString()}");
-
             var factory = new Factory(args);
+
+            Console.WriteLine($"Status of Azure DevOps Builds at {DateTime.Now.ToShortTimeString()} for organisation {factory.Configuration.Organization}");
+            Console.WriteLine();
 
             if (factory.Configuration.DisplayHelp)
             {
@@ -30,6 +31,7 @@ namespace ProjectStatus
                 {
                     var projects = await factory.Projects.GetAllProjectsAsync();
 
+                    BuildStatus.WriteHeaders();
                     foreach (var project in projects)
                     {
                         var builds = await factory.Builds.GetStatusAsync(project.Name, buildDefinitionId: null);
