@@ -41,7 +41,10 @@ namespace ProjectStatus.Services
                     }
                     else
                     {
-                        return Array.Empty<Project>();
+                        if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                            throw new ApplicationException("Unauthorized access to the server. Check or renew your security PAT key.");
+                        else
+                            throw new ApplicationException(response.ReasonPhrase);
                     }
                 }
             }
